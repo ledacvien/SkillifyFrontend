@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 // Define the UserProfileProps interface for TypeScript typing
 interface UserProfileProps {
@@ -8,19 +9,20 @@ interface UserProfileProps {
     email: string;
     bio: string;
     skills: string[];
-    profilePicture: string;
+    profilePicture: string; // This can be a URL for a random boy's image
   };
-  onSendRequest: () => void; // Function type for the friend request
 }
 
 // UserProfile component
-const UserProfile: React.FC<UserProfileProps> = ({ user, onSendRequest }) => {
+const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
+  const router = useRouter(); // Use the router for navigation
+
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 rounded-md shadow-md">
       <div className="flex items-center space-x-6">
         {/* Profile Picture */}
         <img
-          src={user.profilePicture}
+          src="https://cdn.aglty.io/boys-town/quotes/ryan_20230915120925.jpg" // Random boy picture
           alt="Profile Picture"
           className="w-32 h-32 rounded-full"
         />
@@ -31,7 +33,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onSendRequest }) => {
           <p className="mt-2 text-gray-600">{user.bio}</p>
         </div>
       </div>
-
       {/* Skills Section */}
       <div className="mt-6">
         <h3 className="text-xl font-semibold text-gray-800">Skills</h3>
@@ -41,13 +42,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onSendRequest }) => {
           ))}
         </ul>
       </div>
-
-      {/* Friend Request Button */}
+      {/* Go Back Button */}
       <button
-        onClick={onSendRequest}
+        onClick={() => router.push("/dashboard")} // Navigate to dashboard
         className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-md"
       >
-        Send Friend Request
+        Go Back
       </button>
     </div>
   );
