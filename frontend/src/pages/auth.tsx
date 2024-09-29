@@ -12,12 +12,28 @@ const AuthPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [username, setUsernameInput] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [error, setError] = useState('');
   const [isLogin, setIsLogin] = useState<boolean>(true); // Toggle between login and signup
   const router = useRouter();
+
+  const validateUsername = (username: string) => {
+    const regex = /^[a-zA-Z0-9_]{3,30}$/;
+    return regex.test(username);
+  };
 
   // Handle user registration
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
+    if (!firstName || !lastName || !username || !password) {
+      setError('All fields are required.');
+      return;
+    }
+    if (!validateUsername(username)) {
+      setError('Usernames must be between 3 to 30 characters, consisting only of alphanumeric characters and underscores.');
+      return;
+    }
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log('User signed up:', userCredential.user);
@@ -42,6 +58,10 @@ const AuthPage: React.FC = () => {
   // Handle user login
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
+    if (!username || !password) {
+      setError('All fields are required.');
+      return;
+    }
     try {
       // Fetch email using username
       // const response = await axios.get(`/api/getEmail?username=${username}`);
@@ -56,14 +76,52 @@ const AuthPage: React.FC = () => {
       });
     } catch (error) {
       console.error('Error logging in:', error);
+      setError('Error logging in. Please try again.');
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl mb-6 text-center text-gray-800">{isLogin ? 'Login' : 'Sign Up'}</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
+        <h2 className="text-2xl font-bold text-center text-gray-800">{isLogin ? 'Login' : 'Sign Up'}</h2>
         <form onSubmit={isLogin ? handleLogin : handleSignUp}>
+          {!isLogin && (
+            <>
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-sm font-bold mb-2 text-gray-800">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border rounded text-black"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="firstName" className="block text-sm font-bold mb-2 text-gray-800">First Name</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border rounded text-black"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="lastName" className="block text-sm font-bold mb-2 text-gray-800">Last Name</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border rounded text-black"
+                />
+              </div>
+            </>
+          )}
           <div className="mb-4">
             <label htmlFor="username" className="block text-sm font-bold mb-2 text-gray-800">Username</label>
             <input
@@ -75,20 +133,7 @@ const AuthPage: React.FC = () => {
               className="w-full px-3 py-2 border rounded text-black"
             />
           </div>
-          {!isLogin && (
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-sm font-bold mb-2 text-gray-800">Email</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-3 py-2 border rounded text-black"
-              />
-            </div>
-          )}
-          <div className="mb-6">
+          <div className="mb-4">
             <label htmlFor="password" className="block text-sm font-bold mb-2 text-gray-800">Password</label>
             <input
               type="password"
@@ -99,6 +144,7 @@ const AuthPage: React.FC = () => {
               className="w-full px-3 py-2 border rounded text-black"
             />
           </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
             {isLogin ? 'Login' : 'Sign Up'}
           </button>
@@ -106,7 +152,7 @@ const AuthPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-blue-500 hover:underline"
+              className="w-full text-white hover:underline"
             >
               {isLogin ? 'Create an account' : 'Already have an account? Login'}
             </button>
