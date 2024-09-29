@@ -60,7 +60,7 @@ const Activities: React.FC = () => {
         className="text-center mb-4 mt-4"
         style={{ fontSize: "2rem", fontWeight: "bold", color: "#343a40" }}
       >
-        Requests To Me
+        My Requests To People
       </h2>
       <div className="row justify-content-center flex-grow-1">
         {activities.length === 0 ? (

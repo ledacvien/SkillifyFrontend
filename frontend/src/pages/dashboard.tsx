@@ -256,14 +256,14 @@ const Dashboard: React.FC = () => {
         {showPopup && selectedUser && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-bold mb-4">
+              <h3 className="text-xl font-bold mb-4 text-black">
                 Request {selectedUser.username}
               </h3>
               <textarea
                 value={description}
                 onChange={handleDescriptionChange}
                 placeholder="Describe your request"
-                className="w-full p-2 border border-gray-300 rounded-lg mb-4"
+                className="w-full p-2 border border-gray-300 rounded-lg mb-4 text-black"
               />
               <div className="flex justify-end space-x-4">
                 <button
