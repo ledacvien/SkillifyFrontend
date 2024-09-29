@@ -80,6 +80,17 @@ const Dashboard: React.FC = () => {
     setDescription(event.target.value);
   };
 
+  const navigateToPeopleRequest = () => {
+    if (username) {
+      router.push({
+        pathname: '/peopleRequest',
+        query: { username: username as string },
+      });
+    } else {
+      console.error('Username is not available');
+    }
+  };
+
   const handleSubmitRequest = async () => {
     if (selectedUser && username && description) {
       const requestData = {
@@ -113,6 +124,15 @@ const Dashboard: React.FC = () => {
                 <LayoutDashboard className="w-6 h-6" />
                 <span className="ml-3">Dashboard</span>
               </Link>
+            </li>
+            <li>
+              <button
+                onClick={navigateToPeopleRequest}
+                className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg w-full text-left"
+              >
+                <Users className="w-6 h-6" />
+                <span className="ml-3">Request to me</span>
+              </button>
             </li>
             <li>
               <button
