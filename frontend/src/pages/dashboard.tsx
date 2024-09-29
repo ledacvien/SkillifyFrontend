@@ -1,50 +1,38 @@
-<<<<<<< HEAD
-import { useEffect } from "react";
+// src/pages/dashboard.tsx
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import "../app/globals.css";
+import { fetchSkills, fetchUsersBySkill, submitRequest } from "../api";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+} from "../components/RequestCard";
 import Link from "next/link";
-import { FileInput } from "../components/Input";
-import { LayoutDashboard, Users, Search } from "lucide-react";
-=======
-// src/pages/dashboard.tsx
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { auth } from '../firebase/firebaseConfig';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { fetchSkills, fetchUsersBySkill, submitRequest } from '../api';
-import { Card, CardHeader, CardContent, CardTitle } from '../components/RequestCard';
-import Link from 'next/link';
-import { LayoutDashboard, Users } from 'lucide-react';
-import { User } from '../models/user';
-import { useUser } from '../app/page';
->>>>>>> 4bc52a43549975a5fa37d9ab307b41cbd9c83d4b
+import { LayoutDashboard, Users } from "lucide-react";
+import { User } from "../models/user";
+import { useUser } from "../app/page";
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
   const { username } = useUser();
-  const [selectedSkill, setSelectedSkill] = useState('');
+  const [selectedSkill, setSelectedSkill] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
-<<<<<<< HEAD
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push("/auth");
-=======
     const getSkills = async () => {
       try {
         const skillsData = await fetchSkills();
         setSkills(skillsData);
       } catch (error) {
-        console.error('Error fetching skills:', error);
->>>>>>> 4bc52a43549975a5fa37d9ab307b41cbd9c83d4b
+        console.error("Error fetching skills:", error);
       }
     };
 
@@ -59,7 +47,7 @@ const Dashboard: React.FC = () => {
           const usersData = await fetchUsersBySkill(selectedSkill);
           setFilteredUsers(usersData);
         } catch (error) {
-          console.error('Error fetching users:', error);
+          console.error("Error fetching users:", error);
         } finally {
           setLoading(false);
         }
@@ -81,10 +69,12 @@ const Dashboard: React.FC = () => {
   const handleClosePopup = () => {
     setShowPopup(false);
     setSelectedUser(null);
-    setDescription('');
+    setDescription("");
   };
 
-  const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleDescriptionChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setDescription(event.target.value);
   };
 
@@ -99,10 +89,10 @@ const Dashboard: React.FC = () => {
 
       try {
         await submitRequest(requestData);
-        alert('Request submitted successfully');
+        alert("Request submitted successfully");
         handleClosePopup();
       } catch (error) {
-        alert('Failed to submit request');
+        alert("Failed to submit request");
       }
     }
   };
@@ -125,21 +115,6 @@ const Dashboard: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-800">MyDashboard</h1>
         </div>
         <nav className="mt-6">
-<<<<<<< HEAD
-          <Link
-            href="/dashboard"
-            className="flex items-center px-4 py-2 text-gray-600 hover:bg-blue-100 hover:text-blue-600 transition-all duration-200"
-          >
-            <LayoutDashboard className="inline-block w-5 h-5 mr-2" />
-            Dashboard
-          </Link>
-          <Link
-            href="/profile"
-            className="flex items-center px-4 py-2 text-gray-600 hover:bg-blue-100 hover:text-blue-600 transition-all duration-200"
-          >
-            <Users className="inline-block w-5 h-5 mr-2" />
-            Profile
-=======
           <Link href="/dashboard">
             <a className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
               <LayoutDashboard className="inline-block w-5 h-5 mr-2" />
@@ -151,7 +126,6 @@ const Dashboard: React.FC = () => {
               <Users className="inline-block w-5 h-5 mr-2" />
               Profile
             </a>
->>>>>>> 4bc52a43549975a5fa37d9ab307b41cbd9c83d4b
           </Link>
         </nav>
       </aside>
@@ -161,49 +135,13 @@ const Dashboard: React.FC = () => {
         <header className="bg-white shadow-sm rounded-lg mb-4 p-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-<<<<<<< HEAD
-            <div className="relative">
-              <FileInput
-                type="text"
-                placeholder="Search skills..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            </div>
-          </div>
-        </header>
-
-        <div className="max-w-7xl mx-auto py-6">
-          {/* Content grid */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Example Card */}
-            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
-              <h2 className="text-xl font-semibold">Skill Category</h2>
-              <p className="text-gray-600">
-                Description of the skill category.
-              </p>
-            </div>
-            {/* Repeat similar cards as needed */}
-          </div>
-        </div>
-
-        {/* Logout Button */}
-        <div className="flex justify-end pr-6 pb-6">
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-500 text-white rounded-md transition-all duration-200 hover:bg-red-600"
-          >
-            Logout
-          </button>
-        </div>
-=======
             <select
               value={selectedSkill}
               onChange={handleSkillChange}
               className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a skill</option>
-              {skills.map(skill => (
+              {skills.map((skill) => (
                 <option key={skill} value={skill}>
                   {skill}
                 </option>
@@ -224,7 +162,7 @@ const Dashboard: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm">Username: {user.username}</p>
-                    <p className="text-sm">Skills: {user.skills.join(', ')}</p>
+                    <p className="text-sm">Skills: {user.skills.join(", ")}</p>
                     <button
                       onClick={() => handleRequestClick(user)}
                       className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
@@ -235,7 +173,9 @@ const Dashboard: React.FC = () => {
                 </Card>
               ))
             ) : (
-              <p className="text-center col-span-3">No users found for the selected skill.</p>
+              <p className="text-center col-span-3">
+                No users found for the selected skill.
+              </p>
             )}
           </div>
         </div>
@@ -246,13 +186,14 @@ const Dashboard: React.FC = () => {
         >
           Logout
         </button>
->>>>>>> 4bc52a43549975a5fa37d9ab307b41cbd9c83d4b
       </main>
 
       {showPopup && selectedUser && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Request {selectedUser.username}</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              Request {selectedUser.username}
+            </h2>
             <textarea
               value={description}
               onChange={handleDescriptionChange}
