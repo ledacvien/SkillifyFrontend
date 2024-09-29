@@ -1,14 +1,13 @@
-// pages/activities.tsx
+// pages/peopleRequest.tsx
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { fetchRequestsForMe } from "../api"; // Import your API function
-import { User } from "../models/user";
+import { fetchRequestsForMe, updateRequestStatus } from "../api"; // Import your API function
 import { Request } from "../models/request";
 import Link from "next/link";
 
-const Activities: React.FC = () => {
+const PeopleRequest: React.FC = () => {
   const [activities, setActivities] = useState<Request[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
@@ -33,31 +32,76 @@ const Activities: React.FC = () => {
     return () => unsubscribe();
   }, [router, username]);
 
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    try {
+      await updateRequestStatus(id, newStatus);
+      setActivities((prevActivities) =>
+        prevActivities.map((activity) =>
+          activity.id === id ? { ...activity, status: newStatus } : activity
+        )
+      );
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
 
   return (
-    <div className="activities-page">
-      <h1>Activities</h1>
-      {activities.length === 0 ? (
-        <p>No activities found.</p>
-      ) : (
-        <ul>
-          {activities.map((activity) => (
-            <li key={activity.id}>
-              <h2>{activity.title}</h2>
-              <p>{activity.description}</p>
-              <p>Status: {activity.status}</p>
-              {/* <Link href={`/peopleRequest/${activity.id}`}>
-                <a>View Details</a>
-              </Link> */}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="container-fluid vh-100 d-flex flex-column" style={{ backgroundColor: "#ffffff" }}>
+      <h2 className="text-center mb-4 mt-4" style={{ fontSize: "2rem", fontWeight: "bold", color: "#343a40" }}>
+        Requests To Me
+      </h2>
+      <div className="row justify-content-center flex-grow-1">
+        {activities.length === 0 ? (
+          <div className="col text-center">
+            <div className="alert alert-info" role="alert">
+              No activities posted yet.
+            </div>
+          </div>
+        ) : (
+          activities.map((activity) => (
+            <div className="col-md-3 mb-4" key={activity.id}>
+              <div className="card border-0 shadow-sm" style={{ height: "30%" }}>
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title text-primary font-weight-bold mb-2">
+                    {activity.title}
+                  </h5>
+                  <p className="card-text" style={{ flexGrow: 1 }}>
+                    {activity.description}
+                  </p>
+                  <p className="card-text">
+                    <small className="text-muted">
+                      Status: {activity.status}
+                    </small>
+                  </p>
+                  <select
+                    className="form-select mt-auto"
+                    value={activity.status}
+                    onChange={(e) => handleStatusChange(activity.id, e.target.value)}
+                  >
+                    <option value="open">Open</option>
+                    <option value="closed">Closed</option>
+                    <option value="in progress">In Progress</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+      <div className="text-center mt-4 mb-4">
+        <Link href={{
+                  pathname: '/dashboard',
+                  query: { username: username as string },
+                }} className="btn btn-secondary">
+          Go Back
+        </Link>
+      </div>
     </div>
   );
 };
 
-export default Activities;
+export default PeopleRequest;

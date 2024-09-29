@@ -137,7 +137,10 @@ const Dashboard: React.FC = () => {
             </li>
             <li>
               <Link
-                href="/activities"
+                href={{
+                  pathname: '/activities',
+                  query: { username: username as string },
+                }}
                 className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
               >
                 <Users className="w-6 h-6" />
@@ -154,13 +157,16 @@ const Dashboard: React.FC = () => {
               </Link>
             </li>
             <li>
-              <button
-                onClick={navigateToPeopleRequest}
-                className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg w-full text-left"
+            <Link
+                href={{
+                  pathname: '/peopleRequest',
+                  query: { username: username as string },
+                }}
+                className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
               >
                 <Users className="w-6 h-6" />
                 <span className="ml-3">Request to me</span>
-              </button>
+              </Link>
             </li>
             <li>
               <button

@@ -1,6 +1,7 @@
 // pages/activities.tsx
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 // Simulated activity data (replace with your actual data fetching logic)
 const dummyActivities = [
@@ -32,6 +33,8 @@ const dummyActivities = [
 
 const Activities: React.FC = () => {
   const [activities, setActivities] = useState<any[]>([]);
+  const router = useRouter();
+  const { username } = router.query;
 
   useEffect(() => {
     // Simulate fetching activities for the logged-in user
@@ -88,7 +91,10 @@ const Activities: React.FC = () => {
         )}
       </div>
       <div className="text-center mt-4 mb-4">
-        <Link href="/dashboard" className="btn btn-secondary">
+        <Link href={{
+                  pathname: '/dashboard',
+                  query: { username: username as string },
+                }} className="btn btn-secondary">
           Go Back
         </Link>
       </div>

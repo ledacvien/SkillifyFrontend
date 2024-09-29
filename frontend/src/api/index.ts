@@ -148,3 +148,13 @@ export const fetchRequestsForMe = async (username: string) => {
     throw error;
   }
 }
+
+export const updateRequestStatus = async (id: number, newStatus: string) => {
+  try {
+    const response = await axios.put(`/api/updateRequestStatus?id=${id}&status=${newStatus}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating request status:', error);
+    throw error;
+  }
+}
