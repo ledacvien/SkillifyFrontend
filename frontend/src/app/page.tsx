@@ -1,39 +1,54 @@
 // src/app/page.tsx
 "use client";
-import React, { createContext, useState, useContext, ReactNode } from 'react';
-import AuthPage from "../pages/auth";
-import Dashboard from "../pages/dashboard";
-import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-// Create a context for the username
-const UserContext = createContext<{ username: string; setUsername: (username: string) => void } | undefined>(undefined);
+const HomePage: React.FC = () => {
+  const router = useRouter();
 
-const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [username, setUsername] = useState<string>('');
-  return (
-    <UserContext.Provider value={{ username, setUsername }}>
-      {children}
-    </UserContext.Provider>
-  );
+  useEffect(() => {
+    // Redirect to the login page
+    router.push('/auth');
+  }, [router]);
+
+  return null; // Render nothing while redirecting
 };
 
-export const useUser = () => {
-  const context = useContext(UserContext);
-  if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
-  }
-  return context;
-};
+export default HomePage;
+// import React, { createContext, useState, useContext, ReactNode } from 'react';
+// import AuthPage from "../pages/auth";
+// import Dashboard from "../pages/dashboard";
+// import { usePathname } from 'next/navigation';
 
-export default function Home() {
-  const pathname = usePathname();
+// // Create a context for the username
+// const UserContext = createContext<{ username: string; setUsername: (username: string) => void } | undefined>(undefined);
 
-  return (
-    <UserProvider>
-      {pathname === '/dashboard' ? <Dashboard /> : <AuthPage />}
-    </UserProvider>
-  );
-}
+// const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+//   const [username, setUsername] = useState<string>('');
+//   return (
+//     <UserContext.Provider value={{ username, setUsername }}>
+//       {children}
+//     </UserContext.Provider>
+//   );
+// };
+
+// export const useUser = () => {
+//   const context = useContext(UserContext);
+//   if (!context) {
+//     throw new Error('useUser must be used within a UserProvider');
+//   }
+//   return context;
+// };
+
+// export default function Home() {
+//   const pathname = usePathname();
+
+//   return (
+//     <UserProvider>
+//       {pathname === '/dashboard' ? <Dashboard /> : <AuthPage />}
+//     </UserProvider>
+//   );
+// }
 // import Image from "next/image";
 
 // export default function Home() {

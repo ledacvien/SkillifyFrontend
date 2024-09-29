@@ -2,13 +2,13 @@
 import { useState, FormEvent } from 'react';
 import { auth } from '../firebase/firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import axios from 'axios';
-import { useUser } from '../app/page';
+// import { useUser } from '../app/page';
 
 // Define form event handler types
 const AuthPage: React.FC = () => {
-  const { setUsername } = useUser();
+  // const { setUsername } = useUser();
   const [email, setEmail] = useState<string>('');
   const [username, setUsernameInput] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -28,9 +28,12 @@ const AuthPage: React.FC = () => {
       //   email,
       // });
 
-      setUsername(username);
+      // setUsername(username);
 
-      router.push('/dashboard');
+      router.push({
+        pathname: '/dashboard',
+        query: { username },
+      });
     } catch (error) {
       console.error('Error signing up:', error);
     }
@@ -47,7 +50,10 @@ const AuthPage: React.FC = () => {
       
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log('User logged in:', userCredential.user);
-      router.push('/dashboard');
+      router.push({
+        pathname: '/dashboard',
+        query: { username },
+      });
     } catch (error) {
       console.error('Error logging in:', error);
     }
