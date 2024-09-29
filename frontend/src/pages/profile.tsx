@@ -18,8 +18,8 @@ const ProfilePage: React.FC = () => {
           id: authUser.uid,
           name: authUser.displayName || "John Doe",
           email: authUser.email || "example@example.com",
-          bio: "This is a short bio about the user.",
-          skills: ["JavaScript", "React", "Node.js"], // Example skills
+          bio: "Hello, I am John Doe.",
+          skills: ["Plumbing", "Electrician", "Cleaning"], // Example skills
           profilePicture: "https://via.placeholder.com/150", // Placeholder image
         });
       } else {
@@ -30,11 +30,6 @@ const ProfilePage: React.FC = () => {
 
     return () => unsubscribe();
   }, [router]);
-
-  const handleSendRequest = () => {
-    console.log("Friend request sent!");
-    alert("Friend request sent!");
-  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -47,7 +42,15 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="h-screen bg-gray-100">
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <UserProfile user={user} onSendRequest={handleSendRequest} />
+        <UserProfile user={user} />
+        {/* <div className="mt-4"> */}
+        {/* <button
+            onClick={() => router.push("/dashboard")}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          >
+            Go Back
+          </button> */}
+        {/* </div> */}
       </div>
     </div>
   );

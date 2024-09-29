@@ -1,24 +1,29 @@
 // src/pages/dashboard.tsx
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { auth } from '../firebase/firebaseConfig';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { fetchSkills, fetchUsersBySkill, submitRequest } from '../api';
-import { Card, CardHeader, CardContent, CardTitle } from '../components/RequestCard';
-import Link from 'next/link';
-import { LayoutDashboard, Users } from 'lucide-react';
-import { User } from '../models/user';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { auth } from "../firebase/firebaseConfig";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { fetchSkills, fetchUsersBySkill, submitRequest } from "../api";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+} from "../components/RequestCard";
+import Link from "next/link";
+import { LayoutDashboard, Users } from "lucide-react";
+import { User } from "../models/user";
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
   const { username } = router.query;
-  const [selectedSkill, setSelectedSkill] = useState<string>('');
+  const [selectedSkill, setSelectedSkill] = useState<string>("");
   const [skills, setSkills] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [description, setDescription] = useState<string>('');
+  const [description, setDescription] = useState<string>("");
 
   useEffect(() => {
     const getSkills = async () => {
@@ -26,7 +31,7 @@ const Dashboard: React.FC = () => {
         const skillsData = await fetchSkills();
         setSkills(skillsData);
       } catch (error) {
-        console.error('Error fetching skills:', error);
+        console.error("Error fetching skills:", error);
       }
     };
 
@@ -36,7 +41,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        router.push('/auth');
+        router.push("/auth");
       }
     });
 
@@ -46,9 +51,9 @@ const Dashboard: React.FC = () => {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      router.push('/auth');
+      router.push("/auth");
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
@@ -59,7 +64,7 @@ const Dashboard: React.FC = () => {
       const users = await fetchUsersBySkill(skill);
       setFilteredUsers(users);
     } catch (error) {
-      console.error('Error fetching users by skill:', error);
+      console.error("Error fetching users by skill:", error);
     } finally {
       setLoading(false);
     }
@@ -73,10 +78,12 @@ const Dashboard: React.FC = () => {
   const handleClosePopup = () => {
     setShowPopup(false);
     setSelectedUser(null);
-    setDescription('');
+    setDescription("");
   };
 
-  const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleDescriptionChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setDescription(event.target.value);
   };
 
@@ -102,10 +109,10 @@ const Dashboard: React.FC = () => {
 
       try {
         await submitRequest(requestData);
-        alert('Request submitted successfully');
+        alert("Request submitted successfully");
         handleClosePopup();
       } catch (error) {
-        alert('Failed to submit request');
+        alert("Failed to submit request");
       }
     }
   };
@@ -120,9 +127,30 @@ const Dashboard: React.FC = () => {
         <nav className="mt-6">
           <ul>
             <li>
-              <Link href="/dashboard" className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+              <Link
+                href="/dashboard"
+                className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
                 <LayoutDashboard className="w-6 h-6" />
                 <span className="ml-3">Dashboard</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/activities"
+                className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                <Users className="w-6 h-6" />
+                <span className="ml-3">My Activities</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/profile"
+                className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                <Users className="w-6 h-6" />
+                <span className="ml-3">Profile</span>
               </Link>
             </li>
             <li>
@@ -150,7 +178,9 @@ const Dashboard: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 p-6">
         <header className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Welcome, <span style={{ color: 'white' }}>{username}</span></h1>
+          <h1 className="text-3xl font-bold text-gray-800">
+            Welcome, <span style={{ color: "white" }}>{username}</span>
+          </h1>
           <button
             onClick={handleSignOut}
             className="px-4 py-2 bg-red-500 text-white rounded-lg"
@@ -160,13 +190,17 @@ const Dashboard: React.FC = () => {
         </header>
 
         <section className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Select a Skill</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Select a Skill
+          </h2>
           <select
             value={selectedSkill}
             onChange={(e) => handleSkillChange(e.target.value)}
-            className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
           >
-            <option value="">Select a skill</option>
+            <option value="" className="text-gray-400">
+              Select a skill
+            </option>
             {skills.map((skill) => (
               <option key={skill} value={skill}>
                 {skill}
@@ -208,7 +242,9 @@ const Dashboard: React.FC = () => {
         {showPopup && selectedUser && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-bold mb-4">Request {selectedUser.name}</h3>
+              <h3 className="text-xl font-bold mb-4">
+                Request {selectedUser.username}
+              </h3>
               <textarea
                 value={description}
                 onChange={handleDescriptionChange}
