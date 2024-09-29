@@ -10,6 +10,7 @@ const PostActivity: React.FC = () => {
   const [requestType, setRequestType] = useState<string>("micro-assistance");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
+  const { username } = router.query;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

@@ -1,27 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { auth } from "../firebase/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
+import { fetchUser } from "../api";
 import UserProfile from "../components/UserProfile"; // Assuming UserProfile is in components
 
 const ProfilePage: React.FC = () => {
   const router = useRouter();
+  const { username } = router.query;
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is authenticated
-    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
+        const userData = await fetchUser(username as string);
+        setUser(userData);
         // Simulating fetching user data from a database
-        setUser({
-          id: authUser.uid,
-          name: authUser.displayName || "John Doe",
-          email: authUser.email || "example@example.com",
-          bio: "Hello, I am John Doe.",
-          skills: ["Plumbing", "Electrician", "Cleaning"], // Example skills
-          profilePicture: "https://via.placeholder.com/150", // Placeholder image
-        });
+        // setUser({
+        //   id: authUser.uid,
+        //   name: authUser.displayName || "John Doe",
+        //   email: authUser.email || "example@example.com",
+        //   bio: "Hello, I am John Doe.",
+        //   skills: ["Plumbing", "Electrician", "Cleaning"], // Example skills
+        //   profilePicture: "https://via.placeholder.com/150", // Placeholder image
+        // });
       } else {
         router.push("/auth");
       }
@@ -43,14 +47,19 @@ const ProfilePage: React.FC = () => {
     <div className="h-screen bg-gray-100">
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <UserProfile user={user} />
-        {/* <div className="mt-4"> */}
-        {/* <button
-            onClick={() => router.push("/dashboard")}
+        <div className="mt-4">
+          <button
+            onClick={() =>
+              router.push({
+                pathname: "/dashboard",
+                query: { username: username as string },
+              })
+            }
             className="px-4 py-2 bg-blue-500 text-white rounded-lg"
           >
             Go Back
-          </button> */}
-        {/* </div> */}
+          </button>
+        </div>
       </div>
     </div>
   );

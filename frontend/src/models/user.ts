@@ -1,7 +1,8 @@
 // src/models/user.ts
 
 export interface User {
-    username: string;
-    name: string;
-    skills: string[];
-  }
+  username: string;
+  name: string;
+  email: string;
+  skills: string[];
+}

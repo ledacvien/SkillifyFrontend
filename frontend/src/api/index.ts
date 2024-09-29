@@ -1,21 +1,18 @@
 // src/api/index.ts
-import { User } from '../models/user';
-import { Request } from '../models/request';
-import axios from 'axios';
+import { User } from "../models/user";
+import { INewRequest, IRequest, Request } from "../models/request";
+import { ISkill } from "../models/ISkill";
+import axios from "axios";
+import { INewUser, IUser } from "../models/IUser";
+
+const baseurl = "https://skillify-development.up.railway.app";
 
 // Function to fetch the list of skills
 export const fetchSkills = async () => {
   try {
-    // const response = await axios.get('http://example.com/skills');
-    // return response.data; // Return the list of skills
-    const skills = [
-      "Plumbing",
-      "Electrical",
-      "Gardening",
-      "Grocery Shopping",
-      "Babysitting",
-    ];
-    return skills;
+    const response = await axios.get<ISkill[]>(`${baseurl}/api/skills`);
+    console.log("Skills:", response.data);
+    return response.data; // Return the list of skills
   } catch (error) {
     console.error("Error fetching skills:", error);
     throw error;
@@ -25,15 +22,12 @@ export const fetchSkills = async () => {
 // Function to fetch the list of users based on skill
 export const fetchUsersBySkill = async (skill: string) => {
   try {
-    // const response = await axios.get(`http://example.com/users?skill=${skill}`);
-    // return response.data; // Return the list of users
-
-    const sampleUsers: User[] = [
-      { username: "karankamboj", name: "Karan Kamboj", skills: ["Plumbing"] },
-      { username: "sumedha", name: "Sumedha Gupta", skills: ["Gardening"] },
-      // Add more sample users
-    ];
-    return sampleUsers;
+    const response = await axios.get<IUser[]>(`${baseurl}/api/users/skill`, {
+      headers: {
+        skill: skill,
+      },
+    });
+    return response.data; // Return the list of users
   } catch (error) {
     console.error("Error fetching users by skill:", error);
     throw error;
@@ -41,26 +35,24 @@ export const fetchUsersBySkill = async (skill: string) => {
 };
 
 // Function to submit a request
-export const submitRequest = async (requestData: {
-  requesterUsername: string;
-  targetUsername: string;
-  title: string;
-  description: string;
-}) => {
+export const submitRequest = async (requestData: INewRequest) => {
   try {
-    const response = await fetch("/api/request", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestData),
-    });
+    console.log("Submitting request:", requestData);
+    const response = await axios.post<IRequest>(
+      `${baseurl}/api/requests/new`,
+      requestData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          sender: requestData.createdBy,
+          receiver: requestData.createdFor,
+          title: requestData.title,
+          description: requestData.description,
+        },
+      }
+    );
 
-    if (!response.ok) {
-      throw new Error("Failed to submit request");
-    }
-
-    return response.json();
+    return response.data;
   } catch (error) {
     console.error("Error submitting request:", error);
     throw error;
@@ -69,92 +61,112 @@ export const submitRequest = async (requestData: {
 
 export const fetchUser = async (username: string) => {
   try {
-    const response = await axios.get(`/api/getUser?username=${username}`);
+    const response = await axios.get(`${baseurl}/api/user`, {
+      headers: {
+        username: username,
+      },
+    });
+    console.log(response);
     return response.data;
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error("Error fetching user:", error);
     throw error;
   }
 };
 
-export const createUser = async (user: User) => {
+export const createUser = async (user: INewUser) => {
   try {
-    const response = await axios.post('/api/createUser', user);
+    console.log("Creating user:", user.username);
+    const response = await axios.post<IUser>(`${baseurl}/api/users/new`, null, {
+      headers: {
+        username: user.username,
+        email: user.email,
+        name: user.name,
+      },
+    });
     return response.data;
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error("Error creating user:", error);
     throw error;
   }
-}
+};
 
-export const updateUser = async (user: User) => {
+export const updateUser = async (user: IUser) => {
   try {
-    const response = await axios.put('/api/updateUser', user);
+    const response = await axios.put<IUser>(`${baseurl}/api/users`, user, {
+      headers: {
+        "Content-Type": "application/json",
+        username: user.username,
+      },
+    });
     return response.data;
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error("Error updating user:", error);
     throw error;
   }
-}
-
-const dummyActivities = [
-  {
-    id: 1,
-    title: "Help with JavaScript",
-    description: "Looking for someone to help me with JavaScript concepts.",
-    requestType: "micro-assistance",
-    createdBy: "user_123",
-    acceptedBy: null,
-    status: "open",
-  },
-  {
-    id: 2,
-    title: "Skill Swap: Guitar Lessons",
-    description: "Offering guitar lessons in exchange for cooking classes.",
-    requestType: "skill-swap",
-    createdBy: "user_123",
-    acceptedBy: null,
-    status: "open",
-  },
-  {
-    id: 3,
-    title: "Help with Resume",
-    description: "Need someone to review my resume and provide feedback.",
-    requestType: "micro-assistance",
-    createdBy: "user_123",
-    acceptedBy: null,
-    status: "completed",
-  },
-];
+};
 
 // Function to fetch all requests that a user made
 export const fetchMyRequests = async (username: string) => {
   try {
-    const response = await axios.get(`/api/getMyRequests?username=${username}`);
+    const response = await axios.get<IRequest[]>(
+      `${baseurl}/api/requests/sent`,
+      {
+        headers: {
+          username: username,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
-    console.error('Error fetching requests:', error);
+    console.error("Error fetching requests:", error);
     throw error;
   }
-}
+};
 
 export const fetchRequestsForMe = async (username: string) => {
   try {
-    // const response = await axios.get(`/api/getRequestsForMe?username=${username}`);
-    // return response.data;
-    return dummyActivities;
+    const response = await axios.get<IRequest[]>(
+      `${baseurl}/api/requests/received`,
+      {
+        headers: {
+          username: username,
+        },
+      }
+    );
+    return response.data;
+    // return dummyActivities;
   } catch (error) {
-    console.error('Error fetching requests:', error);
+    console.error("Error fetching requests:", error);
     throw error;
   }
-}
+};
 
-export const updateRequestStatus = async (id: number, newStatus: string) => {
+export const updateRequestStatus = async (
+  request_id: string,
+  newStatus: string
+) => {
   try {
-    const response = await axios.put(`/api/updateRequestStatus?id=${id}&status=${newStatus}`);
+    let endpoint = "";
+    console.log("Updating request status:", request_id, newStatus);
+    if (newStatus === "accept") {
+      endpoint = `${baseurl}/api/requests/accept`;
+    } else if (newStatus === "deny") {
+      endpoint = `${baseurl}/api/requests/deny`;
+    }
+
+    const response = await axios.put<IRequest>(
+      endpoint,
+      {},
+      {
+        headers: {
+          request_id: request_id,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
-    console.error('Error updating request status:', error);
+    console.error("Error updating request status:", error);
     throw error;
   }
-}
+};

@@ -13,22 +13,25 @@ import {
 import Link from "next/link";
 import { LayoutDashboard, Users } from "lucide-react";
 import { User } from "../models/user";
+import { ISkill } from "../models/ISkill";
+import { IUser } from "@/models/IUser";
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
   const { username } = router.query;
   const [selectedSkill, setSelectedSkill] = useState<string>("");
-  const [skills, setSkills] = useState<string[]>([]);
+  const [skills, setSkills] = useState<ISkill[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [description, setDescription] = useState<string>("");
 
   useEffect(() => {
     const getSkills = async () => {
       try {
-        const skillsData = await fetchSkills();
+        const skillsData: ISkill[] = await fetchSkills();
+        // console.log("Skills:", skillsData);
         setSkills(skillsData);
       } catch (error) {
         console.error("Error fetching skills:", error);
@@ -61,7 +64,8 @@ const Dashboard: React.FC = () => {
     setSelectedSkill(skill);
     setLoading(true);
     try {
-      const users = await fetchUsersBySkill(skill);
+      const users: IUser[] = await fetchUsersBySkill(skill);
+      console.log("Users:", users[0].skills);
       setFilteredUsers(users);
     } catch (error) {
       console.error("Error fetching users by skill:", error);
@@ -70,7 +74,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleRequestClick = (user: User) => {
+  const handleRequestClick = (user: IUser) => {
     setSelectedUser(user);
     setShowPopup(true);
   };
@@ -90,19 +94,19 @@ const Dashboard: React.FC = () => {
   const navigateToPeopleRequest = () => {
     if (username) {
       router.push({
-        pathname: '/peopleRequest',
+        pathname: "/peopleRequest",
         query: { username: username as string },
       });
     } else {
-      console.error('Username is not available');
+      console.error("Username is not available");
     }
   };
 
   const handleSubmitRequest = async () => {
     if (selectedUser && username && description) {
       const requestData = {
-        requesterUsername: username as string,
-        targetUsername: selectedUser.username,
+        createdBy: username as string,
+        createdFor: selectedUser.username,
         title: `Request from ${username} to ${selectedUser.username}`,
         description,
       };
@@ -138,7 +142,7 @@ const Dashboard: React.FC = () => {
             <li>
               <Link
                 href={{
-                  pathname: '/activities',
+                  pathname: "/activities",
                   query: { username: username as string },
                 }}
                 className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
@@ -149,7 +153,10 @@ const Dashboard: React.FC = () => {
             </li>
             <li>
               <Link
-                href="/profile"
+                href={{
+                  pathname: "/profile",
+                  query: { username: username as string },
+                }}
                 className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
               >
                 <Users className="w-6 h-6" />
@@ -157,9 +164,9 @@ const Dashboard: React.FC = () => {
               </Link>
             </li>
             <li>
-            <Link
+              <Link
                 href={{
-                  pathname: '/peopleRequest',
+                  pathname: "/peopleRequest",
                   query: { username: username as string },
                 }}
                 className="flex items-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
@@ -187,12 +194,12 @@ const Dashboard: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-800">
             Welcome, <span style={{ color: "white" }}>{username}</span>
           </h1>
-          <button
+          {/* <button
             onClick={handleSignOut}
             className="px-4 py-2 bg-red-500 text-white rounded-lg"
           >
             Sign Out
-          </button>
+          </button> */}
         </header>
 
         <section className="mb-6">
@@ -207,11 +214,12 @@ const Dashboard: React.FC = () => {
             <option value="" className="text-gray-400">
               Select a skill
             </option>
-            {skills.map((skill) => (
-              <option key={skill} value={skill}>
-                {skill}
-              </option>
-            ))}
+            {Array.isArray(skills) &&
+              skills.map((skill) => (
+                <option key={skill._id} value={skill.name}>
+                  {skill.name}
+                </option>
+              ))}
           </select>
         </section>
 
@@ -227,7 +235,7 @@ const Dashboard: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm">Username: {user.username}</p>
-                    <p className="text-sm">Skills: {user.skills.join(", ")}</p>
+                    <p className="text-sm">Skills: {selectedSkill}</p>
                     <button
                       onClick={() => handleRequestClick(user)}
                       className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
